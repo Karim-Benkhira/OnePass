@@ -51,7 +51,7 @@ class AuthController extends Controller
         $key =$request->email; 
         RateLimiter::hit($key, 60);
 
-        if (RateLimiter::tooManyAttempts($key, 2)) {
+        if (RateLimiter::tooManyAttempts($key, 10)) {
         $this->sendLimitingMail($request->email);
         return response()->json(['message' => 'Trop de tentatives. Verifiez votre e-mail.','key'=>$key], 429);
          }
