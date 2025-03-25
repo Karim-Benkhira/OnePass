@@ -11,13 +11,11 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HasApiTokens, HasFactory;
 
-
-     use HasApiTokens, HasFactory;
-
-     protected $fillable = ['name','email', 'master_password'];
+    protected $fillable = ['name','email', 'master_password'];
  
-     protected $hidden = ['master_password','remember_token'];
+    protected $hidden = ['master_password','remember_token'];
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
@@ -34,7 +32,6 @@ class User extends Authenticatable
      * @var list<string>
      */
    
-
     /**
      * Get the attributes that should be cast.
      *
@@ -46,5 +43,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'master_password' => 'hashed',
         ];
+    }
+    
+    /**
+     * Get the devices associated with the user.
+     */
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
     }
 }

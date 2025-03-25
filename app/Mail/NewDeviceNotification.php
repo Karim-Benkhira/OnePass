@@ -21,6 +21,8 @@ class NewDeviceNotification extends Mailable
 
     public function build()
     {
+        \Log::info("Building email with verification URL: " . $this->verificationUrl);
+        
         return $this->subject('New Device Login Attempt')
             ->view('emails.new_device_notification')
             ->with([

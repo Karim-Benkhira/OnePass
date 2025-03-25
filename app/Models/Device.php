@@ -9,6 +9,8 @@ class Device extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'device_id';
+
     protected $fillable = [
         'user_id',
         'device_name',
@@ -16,7 +18,7 @@ class Device extends Model
         'ip_address',
         'last_login',
         'is_verified',
-        'user_agent_data'
+        'user_agent_data',
     ];
 
     public function user()
