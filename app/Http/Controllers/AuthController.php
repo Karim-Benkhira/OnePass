@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\LimitingMail;
+use Illuminate\Support\Facades\RateLimiter;
+
 
 class AuthController extends Controller
 {
-    // Inscription
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -42,11 +45,35 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
+
         $user = User::where('email', $request->email)->first();
+
+        $key =$request->email; 
+        RateLimiter::hit($key, 60);
+
+        if (RateLimiter::tooManyAttempts($key, 2)) {
+        $this->sendLimitingMail($request->email);
+        return response()->json(['message' => 'Trop de tentatives. Verifiez votre e-mail.','key'=>$key], 429);
+         }
 
         if (!$user || !Hash::check($request->master_password, $user->master_password)) {
             return response()->json(['message' => 'Les informations d identification sont incorrectes.'], 401);
         }
         return response()->json(['token' => $user->createToken('auth_token')->plainTextToken]);
     }
+
+
+
+    public function sendLimitingMail($userEmail)
+    {
+        if (!$userEmail) {
+            return response()->json(['error' => 'Aucun e-mail fourni'], 400);
+        }
+    
+        Mail::to($userEmail)->send(new LimitingMail());
+    
+        return response()->json(['message' => 'E-mail de mise en garde envoye avec succes']);
+    }
+    
+
 }

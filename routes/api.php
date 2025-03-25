@@ -11,7 +11,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login'); 
+Route::post('/login', [AuthController::class, 'login'])->name('login'); 
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/passwords', [PasswordController::class, 'store']);
@@ -21,8 +21,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/passwords/{password}', [PasswordController::class, 'show']);
 });
 
-
-// Normal authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
     // Device management routes
     Route::post('/devices/check', [DeviceController::class, 'checkDevice']);
