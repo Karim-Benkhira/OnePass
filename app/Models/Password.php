@@ -10,7 +10,7 @@ class Password extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'encrypted_password','name'];
+    protected $fillable = ['user_id','website', 'encrypted_password','username','iv'];
 
     public function user()
     {

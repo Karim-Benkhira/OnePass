@@ -9,18 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('passwords', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
-                $table->string('encrypted_password'); 
-                $table->timestamps();
-
-                
-        });
-       
-    }
+    public function up()
+{
+    Schema::create('passwords', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained();
+        $table->text('encrypted_password');
+        $table->string('website');
+        $table->string('username');
+        $table->text('iv');
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

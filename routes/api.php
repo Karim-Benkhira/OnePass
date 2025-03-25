@@ -10,7 +10,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:3,1'); 
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login'); 
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/passwords', [PasswordController::class, 'store']);

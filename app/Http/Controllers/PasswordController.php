@@ -2,36 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Password;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PasswordController extends Controller
 {
+   
+    public function index()
+    {
+        if (Auth::guest()) {
+            return response()->json(['message' => 'Vous devez etre connecte pour acceder a ce url'], 401); 
+        }
+        return Auth::user()->passwords()->get();
+    }
 
     public function store(Request $request)
     {
-        if (!Auth::check()) {
-            return response()->json(['message' => 'Utilisateur non connecte'], 401);
-        }
-
-        $request->validate(['encrypted_password' => 'required']);
-        $password = Password::create([
-            'user_id' => Auth::id(),
-            'encrypted_password' => $request->encrypted_password,
+    if (!Auth::check()) {
+        return response()->json(['message' => 'Vous devez etre connecte pour acceder a ce url'], 401);
+    }
+        $data = $request->validate([
+            'encrypted_password' => 'required|string',
+            'website' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
+            'iv' => 'required|string'
         ]);
 
-        return response()->json($password, 201);
+        return Auth::user()->passwords()->create($data);
     }
 
-    public function index()
+    public function show(Password $password)
     {
-        if (!Auth::check()) {
-            return response()->json(['message' => 'Utilisateur non connecte'], 401);
+        if ($password->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
-
-        return response()->json(Password::where('user_id', Auth::id())->get());
-    }    
+        return $password;
+    }
 
     public function update(Request $request, Password $password)
     {
@@ -39,10 +46,15 @@ class PasswordController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $request->validate(['encrypted_password' => 'required']);
-        $password->update(['encrypted_password' => $request->encrypted_password]);
+        $data = $request->validate([
+            'encrypted_password' => 'sometimes|string',
+            'website' => 'sometimes|string|max:255',
+            'username' => 'sometimes|string|max:255',
+            'iv' => 'sometimes|string'
+        ]);
 
-        return response()->json($password);
+        $password->update($data);
+        return $password;
     }
 
     public function destroy(Password $password)
@@ -52,6 +64,6 @@ class PasswordController extends Controller
         }
 
         $password->delete();
-        return response()->json(['message' => 'Mot de passe supprime']);
+        return response()->noContent();
     }
 }

@@ -26,4 +26,8 @@ class User extends Authenticatable
             'master_password' => 'hashed',
         ];
     }
+    public function passwords()
+    {
+        return $this->hasMany(Password::class);
+    }
 }
