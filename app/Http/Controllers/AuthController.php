@@ -29,7 +29,7 @@ class AuthController extends Controller
             'master_password' => Hash::make($request->master_password),
         ]);
 
-        return response()->json(['message' => 'Utilisateur créé avec succès.'], 201);
+        return response()->json(['message' => 'Utilisateur cree avec succes'], 201);
     }
 
     public function login(Request $request)
@@ -45,7 +45,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->master_password, $user->master_password)) {
-            return response()->json(['message' => 'Les informations d’identification sont incorrectes.'], 401);
+            return response()->json(['message' => 'Les informations d identification sont incorrectes.'], 401);
         }
         return response()->json(['token' => $user->createToken('auth_token')->plainTextToken]);
     }

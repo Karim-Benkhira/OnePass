@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\DeviceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AuthController;
 
@@ -18,9 +18,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/passwords', [PasswordController::class, 'index']);
     Route::put('/passwords/{password}', [PasswordController::class, 'update']);
     Route::delete('/passwords/{password}', [PasswordController::class, 'destroy']);
+    Route::get('/passwords/{password}', [PasswordController::class, 'show']);
 });
 
-use App\Http\Controllers\DeviceController;
 
 // Normal authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
