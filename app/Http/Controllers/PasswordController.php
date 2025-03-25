@@ -12,7 +12,7 @@ class PasswordController extends Controller
     public function index()
     {
         if (Auth::guest()) {
-            return response()->json(['message' => 'Vous devez etre connecte pour acceder a ce url'], 401); 
+            return response()->json(['message' => 'Vous devez etre connecte pour acceder a cet url'], 401); 
         }
         return Auth::user()->passwords()->get();
     }
@@ -20,13 +20,11 @@ class PasswordController extends Controller
     public function store(Request $request)
     {
     if (!Auth::check()) {
-        return response()->json(['message' => 'Vous devez etre connecte pour acceder a ce url'], 401);
+        return response()->json(['message' => 'Vous devez etre connecte pour acceder a cet url'], 401);
     }
         $data = $request->validate([
             'encrypted_password' => 'required|string',
-            'website' => 'required|string|max:255',
-            'username' => 'required|string|max:255',
-            'iv' => 'required|string'
+            'name' => 'required|string|max:255',
         ]);
 
         return Auth::user()->passwords()->create($data);
@@ -48,9 +46,8 @@ class PasswordController extends Controller
 
         $data = $request->validate([
             'encrypted_password' => 'sometimes|string',
-            'website' => 'sometimes|string|max:255',
-            'username' => 'sometimes|string|max:255',
-            'iv' => 'sometimes|string'
+            'name' => 'sometimes|string|max:255',
+
         ]);
 
         $password->update($data);

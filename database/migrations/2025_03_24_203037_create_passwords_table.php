@@ -15,9 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('user_id')->constrained();
         $table->text('encrypted_password');
-        $table->string('website');
-        $table->string('username');
-        $table->text('iv');
+        $table->string('name');
         $table->timestamps();
     });
 }

@@ -4,13 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 
-class Password extends Model
+class Device extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'encrypted_password'];
+    protected $fillable = [
+        'user_id',
+        'device_name',
+        'device_type',
+        'ip_address',
+        'last_login',
+        'is_verified',
+        'user_agent_data'
+    ];
 
     public function user()
     {
