@@ -34,7 +34,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->master_password, $user->master_password)) {
-            return response()->json(['email' => ['Les informations d’identification sont incorrectes.']]);
+            return response()->json(['email' => ['Les informations d’identification sont incorrectes.']], 401);
         }
 
         return response()->json(['token' => $user->createToken('auth_token')->plainTextToken]);
