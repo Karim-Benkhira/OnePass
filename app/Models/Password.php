@@ -11,7 +11,12 @@ class Password extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'encrypted_password'];
+    protected $fillable = [
+        'encrypted_password',
+        'website',
+        'username',
+        'iv'
+    ];
 
     public function user()
     {
