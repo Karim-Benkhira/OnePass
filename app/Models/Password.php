@@ -18,10 +18,4 @@ class Password extends Model
         return $this->belongsTo(User::class);
     }
 
-use Illuminate\Database\Eloquent\Model;
-
-class Password extends Model
-{
-    //
-
 }
