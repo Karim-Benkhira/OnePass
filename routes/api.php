@@ -13,9 +13,9 @@ Route::get('/', function () {
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/devices/verify', [DeviceController::class, 'verifyDevice'])  // Changed from AuthController to DeviceController
+Route::get('/devices/verify', [DeviceController::class, 'verifyDevice'])
     ->name('device.verify')
-    ->middleware('signed'); // Move this outside authentication, but keep signed middleware
+    ->middleware('signed');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -23,15 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    // Password routes
-    Route::post('/passwords', [PasswordController::class, 'store']);
-    Route::get('/passwords', [PasswordController::class, 'index']);
-    Route::put('/passwords/{password}', [PasswordController::class, 'update']);
-    Route::delete('/passwords/{password}', [PasswordController::class, 'destroy']);
-    Route::get('/passwords/{password}', [PasswordController::class, 'show']);
-
+    // Password routes - using apiResource for cleaner definition
     Route::apiResource('passwords', PasswordController::class);
-
 
     // Device routes
     Route::post('/devices/check', [DeviceController::class, 'checkDevice']);
@@ -46,4 +39,3 @@ Route::prefix('ip')->group(function () {
     Route::delete('/remove', [IpManagementController::class, 'remove']);
     Route::get('/check/{ip}', [IpManagementController::class, 'checkIp']);
 });
-
