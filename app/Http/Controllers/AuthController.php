@@ -69,6 +69,24 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->first();
+        $ipAddress = $request->ip();
+
+        // Check IP access first
+        if ($user) {
+            if ($user->blacklistedIps()->where('ip_address', $ipAddress)->exists()) {
+                return response()->json([
+                    'message' => 'Access denied from this IP address'
+                ], 403);
+            }
+
+            if ($user->whitelistedIps()->count() > 0) {
+                if (!$user->whitelistedIps()->where('ip_address', $ipAddress)->exists()) {
+                    return response()->json([
+                        'message' => 'IP not in whitelist'
+                    ], 403);
+                }
+            }
+        }
 
         $key = $request->email; 
         RateLimiter::hit($key, 60);
@@ -86,18 +104,20 @@ class AuthController extends Controller
         $agent = new Agent();
         $deviceName = $agent->device() ?: 'Unknown Device';
         $deviceType = $agent->isMobile() ? 'Mobile' : 'Desktop';
-        $ipAddress = $request->ip();
         $userAgentData = $request->header('User-Agent');
 
-        // Check if device is verified
+        // Check if device is verified - only check user_id and device_name
         $existingDevice = Device::where('user_id', $user->id)
-            ->where('ip_address', $ipAddress)
             ->where('device_name', $deviceName)
-            ->where('device_type', $deviceType)
             ->first();
 
         if ($existingDevice && $existingDevice->is_verified) {
-            $existingDevice->update(['last_login' => now()]);
+            $existingDevice->update([
+                'last_login' => now(),
+                'ip_address' => $ipAddress,
+                'device_type' => $deviceType,
+                'user_agent_data' => $userAgentData
+            ]);
             return response()->json(['token' => $user->createToken('auth_token')->plainTextToken]);
         } 
         elseif ($existingDevice && !$existingDevice->is_verified) {

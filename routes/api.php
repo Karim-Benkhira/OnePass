@@ -6,6 +6,10 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IpManagementController;
 
+Route::get('/', function () {
+    return response()->json(['message' => 'Password Manager API']);
+});
+
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
