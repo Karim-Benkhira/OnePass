@@ -42,7 +42,7 @@ class DeviceController extends Controller
         }
 
         $verificationUrl = URL::temporarySignedRoute(
-            'devices.verify',
+            'device.verify',  // Changed from devices.verify to device.verify
             now()->addMinutes(30), 
             [
                 'user_id' => $user->id,
@@ -67,21 +67,46 @@ class DeviceController extends Controller
             return response()->json(['message' => 'Invalid or expired verification link.'], 400);
         }
 
-        $user = Auth::user();
-        $deviceData = $request->only(['device_name', 'device_type', 'ip_address', 'user_agent_data']);
+        // Get user from request parameter instead of Auth
+        $user = \App\Models\User::find($request->user_id);
+        
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-        // Store the verified device
-        Device::create([
-            'user_id' => $user->id,
-            'device_name' => $deviceData['device_name'],
-            'device_type' => $deviceData['device_type'],
-            'ip_address' => $deviceData['ip_address'],
-            'user_agent_data' => $deviceData['user_agent_data'],
-            'last_login' => now(),
-            'is_verified' => true,
-        ]);
+        try {
+            // Find existing device or create new one
+            $device = Device::where('user_id', $user->id)
+                ->where('device_name', $request->device_name)
+                ->where('device_type', $request->device_type)
+                ->where('ip_address', $request->ip_address)
+                ->first();
 
-        return response()->json(['message' => 'Device verified successfully. You can now log in.']);
+            if ($device) {
+                // Update existing device
+                $device->update([
+                    'is_verified' => true,
+                    'last_login' => now(),
+                    'user_agent_data' => $request->header('User-Agent') // Get current User-Agent
+                ]);
+            } else {
+                // Create new device if not found
+                Device::create([
+                    'user_id' => $user->id,
+                    'device_name' => $request->device_name,
+                    'device_type' => $request->device_type,
+                    'ip_address' => $request->ip_address,
+                    'user_agent_data' => $request->header('User-Agent'),
+                    'last_login' => now(),
+                    'is_verified' => true,
+                ]);
+            }
+
+            return response()->json(['message' => 'Device verified successfully. You can now log in.']);
+        } catch (\Exception $e) {
+            \Log::error('Device verification failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to verify device: ' . $e->getMessage()], 500);
+        }
     }
 
     /**
