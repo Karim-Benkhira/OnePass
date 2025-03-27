@@ -30,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/passwords/{password}', [PasswordController::class, 'destroy']);
     Route::get('/passwords/{password}', [PasswordController::class, 'show']);
 
+    Route::apiResource('passwords', PasswordController::class);
+
+
     // Device routes
     Route::post('/devices/check', [DeviceController::class, 'checkDevice']);
     Route::get('/devices', [DeviceController::class, 'listDevices']);
