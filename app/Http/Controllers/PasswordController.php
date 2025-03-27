@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Password;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Validator;
 
 class PasswordController extends Controller
@@ -15,11 +16,19 @@ class PasswordController extends Controller
         if (Auth::guest()) {
             return response()->json(['message' => 'Vous devez etre connecte pour acceder a cet url'], 401); 
         }
+
+
+class PasswordController extends Controller
+{
+    public function index()
+    {
+
         return Auth::user()->passwords()->get();
     }
 
     public function store(Request $request)
     {
+
     if (!Auth::check()) {
         return response()->json(['message' => 'Vous devez etre connecte pour acceder a cet url'], 401);
     }
@@ -40,6 +49,17 @@ class PasswordController extends Controller
     return Auth::user()->passwords()->create($validator->validated());
 }
 
+        $data = $request->validate([
+            'encrypted_password' => 'required|string',
+            'website' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
+            'iv' => 'required|string'
+        ]);
+
+        return Auth::user()->passwords()->create($data);
+    }
+
+
     public function show(Password $password)
     {
         if ($password->user_id !== Auth::id()) {
@@ -54,6 +74,7 @@ class PasswordController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
+
         $validator = Validator::make($request->all(), [
             'encrypted_password' => 'sometimes|string',
             'name' => 'sometimes|string|max:255',
@@ -67,6 +88,16 @@ class PasswordController extends Controller
         }
 
         $password->update($validator->validated());
+
+        $data = $request->validate([
+            'encrypted_password' => 'sometimes|string',
+            'website' => 'sometimes|string|max:255',
+            'username' => 'sometimes|string|max:255',
+            'iv' => 'sometimes|string'
+        ]);
+
+        $password->update($data);
+
         return $password;
     }
 

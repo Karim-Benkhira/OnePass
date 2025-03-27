@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PasswordController;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::apiResource('passwords', PasswordController::class);
 });
