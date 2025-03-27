@@ -5,49 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Password;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Support\Facades\Validator;
 
 class PasswordController extends Controller
 {
-   
     public function index()
     {
         if (Auth::guest()) {
             return response()->json(['message' => 'Vous devez etre connecte pour acceder a cet url'], 401); 
         }
-
-
-class PasswordController extends Controller
-{
-    public function index()
-    {
-
         return Auth::user()->passwords()->get();
     }
 
     public function store(Request $request)
     {
-
-    if (!Auth::check()) {
-        return response()->json(['message' => 'Vous devez etre connecte pour acceder a cet url'], 401);
-    }
-        $validator = Validator::make($request->all(), [
-            'encrypted_password' => 'required|string', 
-            'name' => 'required|string|max:255',
-        ], [
-            'encrypted_password.required' => 'le mot de passe est requis.',
-            'name.required' => 'le nom est requis.',
-            'name.max' => 'le nom ne doit pas depasser 255 caracteres.',
-        ]);
-
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Vous devez etre connecte pour acceder a cet url'], 401);
         }
-
-    return Auth::user()->passwords()->create($validator->validated());
-}
 
         $data = $request->validate([
             'encrypted_password' => 'required|string',
@@ -58,7 +32,6 @@ class PasswordController extends Controller
 
         return Auth::user()->passwords()->create($data);
     }
-
 
     public function show(Password $password)
     {
@@ -73,7 +46,6 @@ class PasswordController extends Controller
         if ($password->user_id !== Auth::id()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-
 
         $validator = Validator::make($request->all(), [
             'encrypted_password' => 'sometimes|string',
