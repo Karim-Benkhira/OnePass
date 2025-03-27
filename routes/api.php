@@ -1,11 +1,10 @@
 <?php
-
 use App\Http\Controllers\DeviceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\IpManagementController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -22,8 +21,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/passwords/{password}', [PasswordController::class, 'show']);
 });
 
-use App\Http\Controllers\DeviceController;
-use App\Http\Controllers\IpManagementController;
+Route::get('test', function () {
+    return response()->json(['message' => 'Hello World!']);
+});
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -44,5 +44,4 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/remove', [IpManagementController::class, 'remove']);
         Route::get('/check/{ip}', [IpManagementController::class, 'checkIp']);
     });
-});
 
