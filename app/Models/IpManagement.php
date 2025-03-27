@@ -9,6 +9,8 @@ class IpManagement extends Model
 {
     use HasFactory;
 
+    protected $table = 'ip_managements';
+
     protected $fillable = [
         'user_id',
         'ip_address',
@@ -35,4 +37,4 @@ class IpManagement extends Model
     {
         return $this->status === 'blacklist';
     }
-} 
+}
